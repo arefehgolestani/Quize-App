@@ -1,4 +1,7 @@
 import formatData from "./helper.js";
+
+const level = localStorage.getItem("level") || "medium";
+
 const loader = document.getElementById("loader");
 const container = document.getElementById("container");
 const questionText = document.getElementById("question-text");
@@ -6,10 +9,10 @@ const answerList = document.querySelectorAll(".answer-text");
 const scoreText = document.getElementById("score");
 const nextButton = document.getElementById("next-button");
 const finishButton = document.getElementById("finish-button");
+const error = document.getElementById("error");
 const CORRECT_BONUS = 10;
 const questionNumber = document.getElementById("question-number");
-const URL =
-  "https://opentdb.com/api.php?amount=10&difficulty=medium&type=multiple";
+const URL = `https://opentdb.com/api.php?amount=10&difficulty=${level}&type=multiple`;
 let formattedData = null;
 let questionIndex = 0;
 let correctAnswer = null;
@@ -19,10 +22,15 @@ let isAccepted = true;
 // const formatData = (questionData) => {};
 
 const fetchData = async () => {
-  const response = await fetch(URL);
-  const json = await response.json();
-  formattedData = formatData(json.results);
-  start();
+  try {
+    const response = await fetch(URL);
+    const json = await response.json();
+    formattedData = formatData(json.results);
+    start();
+  } catch (err) {
+    loader.style.display = "none";
+    error.style.display = "block";
+  }
 };
 
 const start = () => {
